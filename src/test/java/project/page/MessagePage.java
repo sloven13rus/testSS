@@ -5,29 +5,47 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
 
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import java.util.ArrayList;
 
 
 public class MessagePage extends BasePage {
 
-    @FindBy(xpath = "//*[@id=\"nb-1\"]/body/div[2]/div[8]/div/div[3]/div[2]/div[2]/div/div/a")
-    public WebElement writeButton;
+    // строка поиска в сообщениях
+    @FindBy(className = "textinput__control")
+    private WebElement searchButton;
 
+    // кнопка фильтра поиска в папках
+    @FindBy(className = "svgicon-mail--AdvancedSearch_folder")
+    private WebElement searchByFolders;
+
+    // кнопка фильтра по входящим сообщениям
+    @FindBy(xpath = "//*[@id=\"nb-1\"]/body/div[9]/div/div/div[1]/span")
+    private WebElement searchByIncoming;
+
+    // строка с найденным сообщением
+    @FindBy(className = "ns-viev-messages-item-wrap")
+    private WebElement foundMessage;
+
+    // кнопка "написать"
+    @FindBy(className = "js-main-action-compose")
+    private WebElement writeButton;
+
+    // строка ввода получателя письма
     @FindBy(className = "composeYabbles")
-    public WebElement emailInput;
+    private WebElement emailInput;
 
+    // строка ввода темы письма
     @FindBy(className = "composeTextField")
-    public WebElement themeInput;
+    private WebElement themeInput;
 
+    // строка ввода текста ссобщения
     @FindBy(css = "div[placeholder='Напишите что-нибудь']")
-    public WebElement messageInput;
+    private WebElement messageInput;
 
+    // кнопка "отправить"
     @FindBy(className = "button2__text")
-    public WebElement sendButton;
+    private WebElement sendButton;
 
-    @FindBy(xpath = "//*[@id=\"nb-1\"]/body/div[2]/div[8]/div/div[2]/div/div/div[1]/div[2]/div/div/div/div[1]/form/div/span/input")
-    public WebElement secondSearchButton;
 
     public MessagePage(WebDriver driver) {
         super(driver);
@@ -35,7 +53,6 @@ public class MessagePage extends BasePage {
 
     /**
      * Метод нажатия кнопки нового письма
-     *
      * @return MessagePage
      */
     private MessagePage newEmailButton() {
@@ -45,39 +62,35 @@ public class MessagePage extends BasePage {
 
     /**
      * Метод ввода адреса письма
-     *
      * @param email адрес получателя
      * @return MessagePage
      */
-    public MessagePage sendEmail(String email) {
+    private MessagePage sendEmail(String email) {
         emailInput.sendKeys(email);
         return this;
     }
 
     /**
      * Метод ввода темы письма
-     *
      * @param theme тема письма
      * @return MessagePage
      */
-    public MessagePage sendTheme(String theme) {
+    private MessagePage sendTheme(String theme) {
         themeInput.sendKeys(theme);
         return this;
     }
 
     /**
      * Метод ввода текста письма
-     *
      * @return MessagePage
      */
     private MessagePage sendText() {
-        messageInput.sendKeys("Найдено");
+        messageInput.sendKeys( "Найдено" + getNumbersOfEmail() + "писем/ма");
         return this;
     }
 
     /**
      * Метод нажатия кнопки отправки письма
-     *
      * @return MessagePage
      */
     private MessagePage clickSendButton() {
@@ -87,7 +100,6 @@ public class MessagePage extends BasePage {
 
     /**
      * Метод отправки письма
-     *
      * @param email адрес
      * @param theme тема письма
      * @return MessagePage
@@ -104,35 +116,26 @@ public class MessagePage extends BasePage {
 
     /**
      * Метод ввода поискового запроса
-     *
      * @param text поисковый запрос
      * @return MessagePage
      */
-    private MessagePage sendSecondSearchText(String text) {
-        secondSearchButton.click();
-        secondSearchButton.sendKeys(text);
-        secondSearchButton.sendKeys(Keys.RETURN);
+    private MessagePage sendSearchText(String text) {
+        searchButton.click();
+        searchButton.sendKeys(text);
+        searchButton.sendKeys(Keys.RETURN);
+        searchByFolders.click();
+        searchByIncoming.click();
         return this;
     }
 
-    /**
-     * Метод возвращает количество писем из результатов поиска
-     *
-     * @return количество писем
-     */
-    private int getSecondNumbersOfEmail() {
-        Pattern pattern = Pattern.compile("\\d*");
-        Matcher matcher = pattern.matcher(secondSearchButton.getText());
-        return Integer.parseInt(matcher.group());
+    // метод подсчета количества писем
+    private int getNumbersOfEmail() {
+        ArrayList<WebElement> mailList = new ArrayList<>();
+        mailList.add(foundMessage);
+        return mailList.size();
     }
 
-    /**
-     * Метод возвращает количество писем из результатов поиска
-     *
-     * @param text поисковый запрос
-     * @return количество писем из результатов поиска
-     */
     public int searchSecondMailCount(String text) {
-        return sendSecondSearchText(text).getSecondNumbersOfEmail();
+        return sendSearchText(text).getNumbersOfEmail();
     }
 }

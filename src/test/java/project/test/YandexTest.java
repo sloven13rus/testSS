@@ -16,7 +16,6 @@ public class YandexTest extends TestBase {
     public void yandexTest() throws IOException {
         int emailCount = new LoginPage(driver)
                 .open()
-                .clickLoginButton()
                 .login(
                         PropertiesReader.getProperty("login"),
                         PropertiesReader.getProperty("password"))
@@ -27,6 +26,6 @@ public class YandexTest extends TestBase {
                         PropertiesReader.getProperty("theme"))
                 .searchSecondMailCount(PropertiesReader.getProperty("theme")
                 );
-        Assert.assertEquals(secondEmailCount, emailCount + 2, "Число писем увеличилось");
+        Assert.assertEquals(secondEmailCount, emailCount + 1, "Число писем увеличилось");
     }
 }
