@@ -7,13 +7,18 @@ import project.helpers.DriverFactory;
 
 import java.io.IOException;
 
+
 public class TestBase {
 
     WebDriver driver;
 
     @BeforeTest
-    public void setup() throws IOException {
-        driver = DriverFactory.createDriver();
+    public void setup() {
+        try {
+            driver = DriverFactory.createDriver();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     @AfterTest

@@ -1,15 +1,19 @@
 package project.helpers;
 
 import io.github.bonigarcia.wdm.WebDriverManager;
+import org.openqa.selenium.UnexpectedAlertBehaviour;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.edge.EdgeDriver;
 import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.ie.InternetExplorerDriver;
 import org.openqa.selenium.opera.OperaDriver;
+import org.openqa.selenium.remote.CapabilityType;
+import org.openqa.selenium.remote.DesiredCapabilities;
 
 import java.io.IOException;
 import java.time.Duration;
+import java.util.concurrent.TimeUnit;
 
 
 /**
@@ -56,7 +60,7 @@ public class DriverFactory {
     }
 
     /**
-     * Метод создания экземпляра дравера
+     * Метод создания экземпляра драйвера
      *
      * @param browser         браузер
      * @param pageLoadTimeout явное ожидание загрузки страницы
@@ -64,8 +68,8 @@ public class DriverFactory {
      * @return WebDriver
      */
     private WebDriver createDriver(DriversEnum browser,
-                                   Duration pageLoadTimeout,
-                                   Duration implicitlyWait) {
+                                   Long pageLoadTimeout,
+                                   Long implicitlyWait) {
         setupDriver(browser);
         WebDriver driver = switch (browser) {
             case CHROME -> new ChromeDriver();
@@ -74,8 +78,10 @@ public class DriverFactory {
             case OPERA -> new OperaDriver();
             case IE -> new InternetExplorerDriver();
         };
-        driver.manage().timeouts().pageLoadTimeout(pageLoadTimeout);
-        driver.manage().timeouts().implicitlyWait(implicitlyWait);
+        driver.manage().timeouts().pageLoadTimeout(pageLoadTimeout, TimeUnit.SECONDS);
+        driver.manage().timeouts().implicitlyWait(implicitlyWait, TimeUnit.SECONDS);
+        driver.manage().timeouts().setScriptTimeout(implicitlyWait, TimeUnit.SECONDS);
+        driver.manage().window().maximize();
         return driver;
     }
 
@@ -91,19 +97,17 @@ public class DriverFactory {
                         PropertiesReader.getProperty(
                                 "browser")
                 ),
-                Duration.ofSeconds(
-                        Long.parseLong(
-                                PropertiesReader.getProperty(
-                                        "pageLoadTimeout"
-                                )
+                Long.parseLong(
+                        PropertiesReader.getProperty(
+                                "pageLoadTimeout"
                         )
+
                 ),
-                Duration.ofSeconds(
-                        Long.parseLong(
-                                PropertiesReader.getProperty(
-                                        "implicitlyWait"
-                                )
+                Long.parseLong(
+                        PropertiesReader.getProperty(
+                                "implicitlyWait"
                         )
+
                 )
         );
     }

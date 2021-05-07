@@ -6,7 +6,6 @@ import project.helpers.PropertiesReader;
 import project.page.LoginPage;
 import project.page.MessagePage;
 
-
 import java.io.IOException;
 
 
@@ -23,9 +22,10 @@ public class YandexTest extends TestBase {
                 );
         int secondEmailCount = new MessagePage(driver)
                 .sendMessage(PropertiesReader.getProperty("email"),
-                        PropertiesReader.getProperty("theme"))
-                .searchSecondMailCount(PropertiesReader.getProperty("theme")
-                );
-        Assert.assertEquals(secondEmailCount, emailCount + 1, "Число писем увеличилось");
+                        PropertiesReader.getProperty("theme"),
+                        emailCount)
+                .refresh()
+                .searchMailCount(PropertiesReader.getProperty("theme"));
+        Assert.assertEquals(secondEmailCount, emailCount + 1, "Число писем не увеличилось");
     }
 }
